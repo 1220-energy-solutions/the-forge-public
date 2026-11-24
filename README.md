@@ -32,6 +32,17 @@ All simulations use a fixed magnetic field. There is no plasma, no self-consiste
 
 This public repository is for open documentation of methods, limitations, and selected results as they are validated. Detailed private research records remain in a separate private repository.
 
+## Navigation
+
+- [MASTER_VISION.md](MASTER_VISION.md) — High-level overview
+- [RESEARCH_STATUS.md](RESEARCH_STATUS.md) — Current verified findings and open questions
+- [methodology/](methodology/) — Magnetic geometry, integrator, validation
+- [experiments/](experiments/) — Individual experiment reports
+- [ROADMAP.md](ROADMAP.md) — Planned priorities
+- [AI_COLLABORATION.md](AI_COLLABORATION.md) — Roles and oversight
+- [research_briefs/](research_briefs/) — Public summaries
+- [CHANGELOG.md](CHANGELOG.md) — Update history
+
 ## Contact
 
 Independent research. No institutional affiliation.
