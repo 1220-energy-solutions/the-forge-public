@@ -1,7 +1,7 @@
 # Experiment 16 · Magnetic Field Acceleration
 
 The Forge · 1220 Energy Solutions · Operation Pink Eye  
-Status proposed. Planning only.
+Status revised after scientific review. Pilot approval and processor availability pending.
 
 ## Research question
 
@@ -9,7 +9,11 @@ Can an interpolated field with direct evaluation in unreliable regions reduce en
 
 Use the 32-face, 320-coil model and the Experiment 14 Phase 3 half-drift, rotation, half-drift Boris step. Swap only the field evaluator at the force midpoint in matched tests. The reference is float64 Magpylib evaluation of the full coil sum, with the same uniform +z bias added analytically to every evaluator. Record results separately at 0, 0.01, 0.1 and 1 T. A common coil-field cache can serve all four biases, but reliability masks must be qualified on the **total** field for each bias.
 
-## Validation context
+## Research progress and CPU availability
+
+Snapshot at 19:32 UTC on 24 November 2026. Experiment 16 remains in planning. The Experiment 14 Phase 3 manifests record 14 of 24 trajectories complete, seven each for the radial and tangential launches. Their latest progress checkpoints were 500,000 and 575,000 of 600,000 steps on the respective in-progress trajectories. The available records for Experiments 12 and 13 stop at 5%. Their current execution and outcomes remain unverified. Experiment 15 remains proposed.
+
+The research environment exposes four logical CPUs. A processor slot for the single-worker pilot has yet to be confirmed. Existing work retains priority. Verify a free slot before any approved launch and defer timing if contention would distort the comparison.
 
 Earlier direct-field runs motivate three stress tests. Long trajectories can diverge under timestep refinement, the outward radial control crosses the 40 cm diagnostic surface, and local searches found off-center candidate nulls under nonzero axial bias. The earlier field map extended to 30 cm. This benchmark includes the 30–40 cm shell and a collar beyond the diagnostic surface.
 
@@ -30,6 +34,12 @@ Create separate construction and held-out probe sets with recorded seeds. Freeze
 ### Null diagnostics
 
 Seed direct root searches from the origin, archived candidates, and independent low-field and interior probes across the qualified region. For each bias, bracket weak regions with direct probes, solve for candidate roots from multiple seeds, deduplicate by position and estimate the local Jacobian by direct finite differences at two spacings. Record residuals and conditioning. Include radii of 0.1, 0.5, 1 and 2 mm in several directions around each resolved root. Search raw interpolation for shifted or spurious roots and use direct evaluation to check their neighborhoods. Search representative cells where interpolation remains active, including interfaces. Record extended or poorly conditioned near-zero regions as direct-only. Root comparisons apply to the searched volume and seeds.
+
+### Targeted held-out tests
+
+1. **Hidden weak-field pockets.** Freeze the candidate grid and masks before the search. With an independent seed, sample cells marked safe for interpolation, including cells whose corners are all above 1 mT. Stratify by bias, radial shell (including 30–40 cm), refinement level and distance to a grid interface. Start bounded multistart minimizations of the squared total field magnitude from independently chosen off-grid points. Use only direct Magpylib evaluations in the objective and base seed ranking only on direct values. Minimize over each selected cell and repeat at shared faces with a search box spanning both cells. Confirm low minima with a separate start and direct surrounding probes. Apply the weak-field gate to the minimizer and its neighborhood even when it has no resolved root. Record the number of searches, observer calls, limits reached and unsearched strata. Finding no pockets gives evidence only for the searched regions.
+2. **Near-grazing 40 cm passages.** Use direct-only trajectory searches to vary radial launch offset or the normal component of velocity until paired starts bracket an outward crossing and an interior near miss. Select held-out cases before opening hybrid trajectory results. Target signed peak radial clearances of ±0.25 mm as resolved controls and approximately ±0.05 mm as ambiguity stress cases. Estimate the signed clearance from the step chords over the full event window. Deliberately include small outward normal velocity and monitor an outward-then-inward pair where the direct reference resolves both events. Repeat the same initial states at 10, 5 and 2.5 ps for qualification, refining direct steps if the event class or peak clearance remains ambiguous. Compare signed clearance, crossing order, times and normal velocity at passage. A direct reference that changes class under refinement or lies within the existing grazing tolerance stays unresolved until finer direct evidence establishes the outcome. Any resolved hybrid change of passage class fails the case.
+3. **Trajectory passage through adaptive interfaces.** Freeze the adaptive grid, then select representative coarse–fine and interpolation-to-direct faces by their geometry and refinement levels. Use matched 10 eV starts on either side and trajectories that traverse each selected face in both directions. Include near-normal crossings, shallow oblique crossings, and a path close to an edge where several leaves meet. Confirm actual traversal from force-midpoint cell IDs and log the evaluator and fallback reason at every transition. Compare the hybrid and direct field at identical direct force midpoints before and after the face, then compare independently integrated positions and velocities on shared times. Also compare the accumulated error in the magnetic impulse along the direct path using the sum of charge times velocity cross field error times timestep. Include repeated passages where feasible. Require the existing interface jump and trajectory gates on resolved cases, with checkpoints local to the crossing as well as whole-segment diagnostics.
 
 ## Benchmark protocol
 
@@ -53,10 +63,21 @@ Freeze these starting tolerances before the first approved run. Each workload, b
 | Memory | Proposed pilot limits are 256 MiB serialized cache and 512 MiB incremental peak RSS per worker over the direct baseline, including build. Check total concurrent worker memory against the approved host allocation. |
 | Reproducibility | Rebuild from recorded inputs, verify cache identity for identical numerical inputs or verify declared tolerances across platforms, and repeat held-out classifications on a recorded second seed. Any failed or unresolved gate restricts use to the validated domain, bias, horizon and workload. Use direct evaluation for other scientific runs. |
 
+## Open scientific questions
+
+- How often does an independently seeded direct minimization find weak-field pockets inside cells the adaptive grid marks safe? How much direct fallback is needed to cover the pockets found?
+- Do near-grazing crossing classifications and event timing survive both timestep and mesh refinement when the direct reference itself lies close to the diagnostic surface?
+- Does repeated passage across adaptive boundaries accumulate enough force error to alter trajectories, even when pointwise field and interface tests pass?
+- Does the adaptive cache amortize its build and memory costs and retain an end-to-end advantage against batched direct evaluation on qualified workloads? Which horizons and biases qualify?
+
 ## Approval, cost and records
 
-Approval is required before each compute stage. Proposed pilot cap is one worker, 500,000 direct observer points across construction, field validation and field timing, 25,000 scalar-equivalent direct trajectory steps including timing repeats, and 30 minutes wall time, whichever comes first. Record batches and count each observer position once per direct call that evaluates it. Prioritize the 20 mm and first adaptive level before finer uniform grids. A complete 5 mm cube would need over 6 million grid nodes, so its pilot comparison is limited to matched subdomains. Report incomplete measurements if a cap is reached. Use fresh run IDs and preserve existing records and jobs.
+The 30-minute pilot is a preliminary feasibility test. Its deliverables are a working direct baseline and small adaptive cache, measured build cost and peak memory, observed fallback reasons, indicative paired timings, and a record of whether each targeted test exercised its intended condition. Start in a matched subdomain at 20 and 10 mm. After recording a baseline, prioritize one direct-minimization search block (up to eight starts and 2,000 evaluations), one short paired near-boundary passage or near miss seeded locally, and one paired traversal of each interface type the cache exposes. Record missed traversals or unresolved grazing as incomplete coverage. The full-workload accuracy, speed and reproducibility gates apply to a separately approved qualification stage. Pilot timings are provisional and carry no speedup claim.
 
-A planning estimate of 6.79 ms per scalar step gives roughly 3 minutes for 25,000 trajectory steps and roughly 4 hours for **one** 3 µs case across 10, 5 and 2.5 ps (2.1 million direct steps). Field construction cost depends on batching and coverage and must be measured. Request a separate full-window budget after the pilot, with projected observer and step counts, wall time, memory, and stop conditions.
+Proposed hard caps are one worker, 500,000 direct observer points across construction, field validation and field timing, 25,000 scalar-equivalent direct trajectory evaluations including fallback and timing repeats, and 30 minutes wall time. Stop at the first cap and record partial results. Count each position once per direct call that evaluates it and use bounded batch sizes so a stage can stop within its budget. Use fresh run IDs and preserve existing records and jobs.
+
+Launch requires project-owner approval of the revised pilot scope and budget, and a confirmed processor slot free of existing research work. Check availability read-only. Leave the pilot pending while existing jobs occupy the slot. Qualification requires a separate approval. Keep the public publication checkout separate and obtain project-owner approval of the exact revised public files before any GitHub write.
+
+The archived Phase 3 validation rate of about 6.79 ms per scalar step gives roughly 3 minutes for 25,000 trajectory steps and roughly 4 hours for **one** 3 µs case across 10, 5 and 2.5 ps (2.1 million direct steps). Field construction cost depends on batching and coverage and must be measured. Request a separate full-window budget after the pilot, with projected observer and step counts, wall time, memory, and stop conditions.
 
 Save a run manifest with model, configuration, evaluator, integrator, input and cache hashes, geometry and units, biases, exact initial conditions, timesteps and horizons, grid levels and masks, probe seeds and splits, tolerances, software versions, hardware and timing configuration, and completion status. Write raw paired accuracy, null, timing, trajectory and memory summaries, including failures and coverage.
