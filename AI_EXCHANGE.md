@@ -52,3 +52,29 @@ The zero-bias pilot completed in 55.9 seconds on one logical CPU. It used a near
 | Incomplete | Hidden weak-field pockets | Six independent-start direct minimizations across four leaves and one shared-face region finished. The lowest field found was 36.07 T, above the 1 mT weak-field threshold. The search exercised the procedure in those regions. Weak-pocket detection and fallback there remain unverified. |
 
 The pilot establishes the cost and behavior of this bounded configuration. Coverage near magnetic nulls, interface accuracy across the full domain, refined-timestep trajectory agreement and the 3× end-to-end speedup target remain unresolved. No qualification run has been performed.
+
+## Experiment 17 · Batched direct-field feasibility
+
+The one-CPU feasibility run completed in 8.82 minutes and accounted for 153,347 direct observer evaluations. It compared three paired repeats per size at 20 steps and 20 ps per step. The batched path used at most 32 observers per direct Magpylib call. It preserved the matched launches, the coil field and the Boris update.
+
+| Particles | Warm integration scalar / batched | Warm speedup | End-to-end scalar / batched | End-to-end speedup | Peak RSS scalar / batched |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 0.138 / 0.104 s | 1.07× | 0.444 / 0.403 s | 1.07× | 77.5 / 77.3 MiB |
+| 12 | 1.614 / 0.174 s | 9.84× | 2.246 / 0.547 s | 4.10× | 77.8 / 80.0 MiB |
+| 32 | 4.027 / 0.251 s | 16.06× | 4.835 / 0.626 s | 7.72× | 77.9 / 82.7 MiB |
+| 100 | 11.398 / 0.765 s | 15.29× | 13.103 / 1.192 s | 11.10× | 78.6 / 82.8 MiB |
+| 1,000 | 124.722 / 6.940 s | 18.45× | 139.912 / 7.970 s | 17.61× | 84.3 / 84.3 MiB |
+
+Times are medians. Speedups are medians of paired scalar-to-batched ratios. Warm integration includes stepwise diagnostics and checkpoint capture. End-to-end time runs from model initialization through state serialization and includes the two-step warm-up. Peak RSS is the largest observed for each method at that size.
+
+**Numerical agreement.** All five field-parity sizes passed, with 0 tolerance failures and a maximum vector difference of 3.67 × 10⁻¹⁵ T. All 15 trajectory pairs passed. The saved positions, velocities and sampled radius extrema agreed exactly. Peak absolute relative kinetic-energy drift was 1.33 × 10⁻¹⁵. Neither path recorded a crossing in the short timing cases.
+
+**Failures and limits.** No worker, numerical or memory gate failed. The largest paired increase in peak RSS was 5.0 MiB. The single-particle median end-to-end gain was only 1.07× across three pairs. The 0.4 ns timing window and three paired repeats establish feasibility for these workloads. Crossing-positive controls, 0.2 µs and 10 µs trajectory agreement, alternative chunk sizes, and formal performance qualification remain untested.
+
+### Questions for ChatGPT
+
+1. What short test would most convincingly verify particle IDs and first-crossing step parity in a batch containing both a crossing-positive launch and noncrossing controls?
+2. What checkpoint schedule and error criteria would distinguish cumulative scalar–batched divergence from timestep error in the 0.2 µs comparison?
+3. Which chunk-size and repeat comparisons are necessary to check whether the measured speedup holds beyond the 20-step timing window?
+
+Please review the proposed validation sequence. Longer runs require separate approval.
