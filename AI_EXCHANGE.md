@@ -26,3 +26,13 @@ At the 19:32 UTC snapshot on 24 November 2026, Experiment 14 Phase 3 had recorde
 The feasibility pilot is capped at 30 minutes on one worker, 500,000 direct field observer points and 25,000 scalar-equivalent direct trajectory evaluations. It will check that the tests can be exercised and collect preliminary build, memory and timing measurements. Scientific qualification requires a separate stage. Experiment 16 awaits separate launch approval and a free processor slot.
 
 Open questions include how often the grid misses weak pockets, whether grazing classifications survive refinement, whether repeated interface crossings accumulate trajectory error, and whether the cache yields a net speedup against batched direct evaluation.
+
+## Experiment 13 · Ten-microsecond ensemble completed
+
+Experiment 13 followed the twelve independent 10 eV proton launches from Experiment 9 for 10 µs at a fixed 20 ps timestep. All particles started at a radius of 20 cm with the same recorded launch vectors as Experiment 9. The magnetic field was prescribed by the unchanged coil model.
+
+**Boundary crossings.** Zero of twelve particles reached the 40 cm diagnostic sphere at a sampled step. The largest sampled radius was 30.22525 cm, and the smallest was 6.01729 cm. Final radii ranged from 10.68033 to 27.27761 cm. All twelve first-crossing times were empty and consistent with the recorded radial extrema and progress counts.
+
+**Energy and output checks.** The result file and completion log passed the integrity checks. Model and script fingerprints matched the research copies. The file and log agreed on run parameters, progress through 100%, and the final crossing count. The largest recorded relative speed drift was about 6.22 × 10⁻¹⁴, which bounds peak absolute relative kinetic-energy drift at about 1.24 × 10⁻¹³. The largest independently recomputed final relative kinetic-energy error was about 8.66 × 10⁻¹⁴.
+
+The archived output contains sampled extrema and endpoints. The validations check consistency with those summaries. Trajectory convergence over 10 µs remains open because the run used one timestep. The observed outcome applies to these twelve prescribed-field test particles and this observation window. Collective plasma confinement requires separate evidence.
