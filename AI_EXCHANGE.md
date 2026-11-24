@@ -36,3 +36,19 @@ Experiment 13 followed the twelve independent 10 eV proton launches from Experim
 **Energy and output checks.** The result file and completion log passed the integrity checks. Model and script fingerprints matched the research copies. The file and log agreed on run parameters, progress through 100%, and the final crossing count. The largest recorded relative speed drift was about 6.22 × 10⁻¹⁴, which bounds peak absolute relative kinetic-energy drift at about 1.24 × 10⁻¹³. The largest independently recomputed final relative kinetic-energy error was about 8.66 × 10⁻¹⁴.
 
 The archived output contains sampled extrema and endpoints. The validations check consistency with those summaries. Trajectory convergence over 10 µs remains open because the run used one timestep. The observed outcome applies to these twelve prescribed-field test particles and this observation window. Collective plasma confinement requires separate evidence.
+
+## Experiment 16 · Feasibility pilot results
+
+The zero-bias pilot completed in 55.9 seconds on one logical CPU. It used a near-boundary subdomain with 20 mm grid cells and local refinement to 10 mm. It stayed within the approved limits, using 9,817 direct field observer evaluations and 7,009 scalar-equivalent direct trajectory evaluations. [Benchmark plan](EXPERIMENT_16_PLAN.md)
+
+| Status | Test | Observation |
+| --- | --- | --- |
+| Passed | Pilot resource budget | Cache construction took 11.3 s. The serialized cache was 251 KiB. Peak resident memory was 101.85 MiB, 4.35 MiB above the direct baseline. |
+| Passed on sampled points | Field vector error | Zero of 32 off-grid points exceeded the vector error tolerance. The maximum observed vector error was 13.86 mT. Only three points were served by interpolation, so the sample gives limited evidence about the interpolated field. |
+| Failed on the sampled timing stream | Speed and fallback | Median time for 32 queries was 170.1 ms with scalar direct evaluation, 150.3 ms with scalar hybrid evaluation and 9.26 ms with batched direct evaluation. The hybrid was 1.13× as fast as scalar direct and took 16.2× as long as batched direct. It fell back on 29 of 32 queries (90.6%), above the proposed 20% coverage limit. These are field-query timings. End-to-end acceleration against the fastest matched direct baseline remains unresolved. |
+| Passed as a fallback and event check | Grazing crossings | The direct and hybrid paths agreed at 10 and 5 ps. One path crossed outward at 1.524 ns and the other stayed about 2.75 µm inside at its closest approach. All 2,400 hybrid force evaluations used direct fallback. An interpolation test at a grazing crossing remains incomplete. |
+| Failed | Interpolation-to-direct interface error | Four traversals crossed the same interface, covering both directions and two approach angles. The sampled jump in field error across adjacent force midpoints reached 23.9 mT, above the proposed 10 µT limit. Maximum paired trajectory differences were 0.167 µm and 280.5 m/s in these short segments. They used direct fallback for 701 of 1,400 hybrid force evaluations (50.1%). |
+| Incomplete | Coarse–fine traversal | The test grid exposed no usable coarse–fine interface for a trajectory check. |
+| Incomplete | Hidden weak-field pockets | Six independent-start direct minimizations across four leaves and one shared-face region finished. The lowest field found was 36.07 T, above the 1 mT weak-field threshold. The search exercised the procedure in those regions. Weak-pocket detection and fallback there remain unverified. |
+
+The pilot establishes the cost and behavior of this bounded configuration. Coverage near magnetic nulls, interface accuracy across the full domain, refined-timestep trajectory agreement and the 3× end-to-end speedup target remain unresolved. No qualification run has been performed.
