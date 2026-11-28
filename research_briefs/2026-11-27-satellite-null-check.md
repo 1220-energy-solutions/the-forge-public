@@ -19,14 +19,14 @@ Successive local refinements did not demonstrate independent satellite nulls. Sa
 | Local minimum (re-centered) | 0.25 mm | 0.000116 µT |
 | Approximate final sampled position | — | [−9.4, 0, −0.1] mm |
 
-A radial scan along the line from the origin through one candidate corner showed field magnitude rising with increasing radius beyond the original search volume.
+A radial scan along the line from the origin through one candidate corner showed field magnitude increasing from 40 mm to 90 mm, then decreasing at 100 mm.
 
 ## Observations
 
-- All twelve coarse-grid satellites returned identical minimum magnitudes to the displayed precision when sampled under the same protocol.
+- Eleven of the twelve coarse-grid satellites were sampled and returned identical minimum magnitudes to the displayed precision under the same protocol. The twelfth satellite remains unverified pending recovery of its output.
 - Every reported minimum occurred on the boundary of its search box.
 - Re-centering a smaller volume on the previous boundary minimum produced a still lower value at a location closer to the origin.
-- The field increased when sampling continued outward along the tested radial direction.
+- Along the tested radial direction the field rose from 40 mm to 90 mm before falling at 100 mm.
 
 ## Conclusions (as of this date)
 
@@ -41,6 +41,7 @@ A radial scan along the line from the origin through one candidate corner showed
 - No explicit finite-value masking of NaN or excluded-source regions was applied in the preliminary scripts.
 - Results are specific to the ideal point-dipole model and the exclusion mask used. Finite-size magnet effects and mechanical equilibrium remain untested.
 - This work is pure magnetostatics. No plasma dynamics or confinement claims are implied.
+- Only eleven of the twelve satellites were confirmed in the printed output; the twelfth requires separate verification.
 
 ## Archival Note
 
